@@ -75,20 +75,20 @@ A Xray backend framework that can easily support many panels.
 
 # 一键安装
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/XrayR-project/XrayR-release/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/amfiyong/XrayR-release/master/install.sh)
 ```
 ## 使用Docker部署软件
 [Docker部署教程](https://github.com/XrayR-project/XrayR-release/blob/master/README.md)
 
 ## 下载并使用
-1. 在此处，根据自身系统选择合适的版本：[Release](https://github.com/XrayR-project/XrayR/releases)
+1. 在此处，根据自身系统选择合适的版本：[Release](https://github.com/amfiyong/XrayR/releases)
 2. 解压压缩包，之后运行：`./XrayR -config config.yml`
 
 ## 编译并使用
 1. go 1.16.0
 2. 依次运行
 ```bash
-git clone https://github.com/XrayR-project/XrayR
+git clone https://github.com/amfiyong/XrayR
 cd XrayR/main
 go mod tidy
 go build -o XrayR -ldflags "-s -w"
@@ -109,7 +109,7 @@ Nodes:
   -
     PanelType: "SSpanel" # Panel type: SSpanel
     ApiConfig:
-      ApiHost: "http://127.0.0.1:667"
+      ApiHost: "https://example.com"
       ApiKey: "123"
       NodeID: 41
       NodeType: V2ray # Node type: V2ray, Shadowsocks, Trojan
@@ -125,15 +125,15 @@ Nodes:
         CertDomain: "node1.test.com" # Domain to cert
         CertFile: ./cert/node1.test.com.cert # Provided if the CertMode is file
         KeyFile: ./cert/node1.test.com.key
-        Provider: alidns # DNS cert provider, Get the full support list here: https://go-acme.github.io/lego/dns/
+        Provider: cloudflare # DNS cert provider, Get the full support list here: https://go-acme.github.io/lego/dns/
         Email: test@me.com
         DNSEnv: # DNS ENV option used by DNS provider
-          ALICLOUD_ACCESS_KEY: aaa
-          ALICLOUD_SECRET_KEY: bbb
+          CF_API_EMAIL: 
+          CF_API_KEY: 
   -
     PanelType: "V2board" # Panel type: SSpanel, V2board
     ApiConfig:
-      ApiHost: "http://V2board.com"
+      ApiHost: "https://example.com"
       ApiKey: "123"
       NodeID: 42
       NodeType: Trojan # Node type: V2ray, Shadowsocks, Trojan
@@ -149,11 +149,11 @@ Nodes:
         CertDomain: "node2.test.com" # Domain to cert
         CertFile: ./cert/node2.test.com.cert # Provided if the CertMode is file
         KeyFile: ./cert/node2.test.com.key
-        Provider: alidns # DNS cert provider, Get the full support list here: https://go-acme.github.io/lego/dns/
+        Provider: cloudflare # DNS cert provider, Get the full support list here: https://go-acme.github.io/lego/dns/
         Email: test@me.com
         DNSEnv: # DNS ENV option used by DNS provider
-          ALICLOUD_ACCESS_KEY: aaa
-          ALICLOUD_SECRET_KEY: bbb
+          CF_API_EMAIL: 
+          CF_API_KEY:
 ```
 ## 前端配置
 ### 限速说明
