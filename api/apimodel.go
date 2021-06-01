@@ -2,13 +2,13 @@ package api
 
 // API config
 type Config struct {
-	APIHost     string `mapstructure:"ApiHost"`
-	NodeID      int    `mapstructure:"NodeID"`
-	Key         string `mapstructure:"ApiKey"`
-	NodeType    string `mapstructure:"NodeType"`
-	EnableVless bool   `mapstructure:"EnableVless"`
-	EnableXTLS  bool   `mapstructure:"EnableXTLS"`
-	Timeout     int    `mapstructure:"Timeout"`
+	APIHost     string  `mapstructure:"ApiHost"`
+	NodeID      int     `mapstructure:"NodeID"`
+	Key         string  `mapstructure:"ApiKey"`
+	NodeType    string  `mapstructure:"NodeType"`
+	EnableVless bool    `mapstructure:"EnableVless"`
+	EnableXTLS  bool    `mapstructure:"EnableXTLS"`
+	Timeout     int     `mapstructure:"Timeout"`
 }
 
 // Node status
