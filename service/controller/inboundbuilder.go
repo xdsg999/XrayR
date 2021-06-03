@@ -90,6 +90,13 @@ func InboundBuilder(listenIP string, nodeInfo *api.NodeInfo, certConfig *CertCon
 			Headers: headers,
 		}
 		streamSetting.WSSettings = wsSettings
+	} else if nerworkType == "hhtp" {
+		hosts := conf.StringList{nodeInfo.Host}
+		httpsSettings := &conf.HTTPConfig{
+			Host: &hosts,
+			Path: nodeInfo.Path,
+		}
+		streamSetting.HTTPSettings = httpSettings
 	}
 
 	streamSetting.Network = &transportProtocol
