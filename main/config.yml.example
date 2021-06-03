@@ -16,6 +16,7 @@ Nodes:
       EnableXTLS: false # Enable XTLS for V2ray and Trojan
       SpeedLimit: 0 # Local setting will replace remote settings
       DeviceLimit: 0 # Local setting will replace remote settings
+      RuleListPath: # ./rulelist path to local rulelist file
     ControllerConfig:
       ListenIP: 0.0.0.0 # IP address you want to listen
       UpdatePeriodic: 60 # Time to update the nodeinfo, how many sec.
