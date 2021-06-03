@@ -90,9 +90,9 @@ func InboundBuilder(listenIP string, nodeInfo *api.NodeInfo, certConfig *CertCon
 			Headers: headers,
 		}
 		streamSetting.WSSettings = wsSettings
-	} else if nerworkType == "hhtp" {
+	} else if networkType == "hhtp" {
 		hosts := conf.StringList{nodeInfo.Host}
-		httpsSettings := &conf.HTTPConfig{
+		httpSettings := &conf.HTTPConfig{
 			Host: &hosts,
 			Path: nodeInfo.Path,
 		}
