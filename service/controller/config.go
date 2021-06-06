@@ -22,7 +22,7 @@ type CertConfig struct {
 	DNSEnv     map[string]string `mapstructure:"DNSEnv"`
 }
 
-type FallBackConfigs struct {
+type FallBackConfig struct {
 	SNI              string `mapstructure:"SNI"`
     Path             string `mapstructure:"Path"`
 	Dest             string `mapstructure:"Dest"`

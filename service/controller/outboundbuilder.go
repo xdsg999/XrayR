@@ -19,20 +19,20 @@ func OutboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.OutboundHand
 	// build send ip address
 	if config.SendIP != "" {
 		ipAddress := net.ParseAddress(config.ListenIP)
-		outBoundConfig.SendThrough = &conf.Address{ipAddress}
+		outboundDetourConfig.SendThrough = &conf.Address{ipAddress}
 	}
 
 	// freedom protocol setting
-	var DomainStrategy string = "Asis"
+	var domainStrategy string = "Asis"
 	if config.EnableDNS {
 		if config.DNSType != "" {
-			DomainStrategy = config.DNSType
+			domainStrategy = config.DNSType
 		} else {
-			DomainStrategy = "UseIP"
+			domainStrategy = "UseIP"
 	    }
 	}
 	proxySetting := &conf.FreedomConfig{
-		DomainStrategy: DomainStrategy,
+		DomainStrategy: domainStrategy,
 	}
 	var setting json.RawMessage
 	setting, err := json.Marshal(proxySetting)

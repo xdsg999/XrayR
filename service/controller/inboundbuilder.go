@@ -47,18 +47,18 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			protocol = "vless"
 			// enable fallback
 			if config.EnableFallback {
-				fallbackConfigs, err := buildVlessFallbacks(config.FabllBackConfigs)
+				fallbackConfigs, err := buildVlessFallbacks(config.FallBackConfigs)
 				if err == nil {
-					proxySetting = &conf.VLessInboundConfif{
-						Decryption: "none"
+					proxySetting = &conf.VLessInboundConfig{
+						Decryption: "none",
 						Fallbacks: fallbackConfigs,
 					}
 				} else {
 					return nil, err
 				}
 			} else {
-				proxySetting = &conf.VLessInboundConfif{
-					Decryption: "none"
+				proxySetting = &conf.VLessInboundConfig{
+					Decryption: "none",
 				}
 			}
 		} else {
@@ -69,7 +69,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		protocol = "trojan"
 		// enable fallback
 		if config.EnableFallback {
-			FallBackConfig, err :=buildTrojanFallbacks(config.FallBackConfigs)
+			fallbackConfigs, err :=buildTrojanFallbacks(config.FallBackConfigs)
 			if err == nil {
 				proxySetting = &conf.TrojanServerConfig{
 					Fallbacks: fallbackConfigs,
@@ -111,7 +111,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		tcpSetting := &conf.TCPConfig{
 			AcceptProxyProtocol: config.EnableProxyProtocol,
 		}
-		streamSetting.TCPSetting = tcpSetting
+		streamSetting.TCPSettings = tcpSetting
 	} else if networkType == " websocket" {
 		headers := make(map[string]string)
 		headers["Host"] = nodeInfo.Host
@@ -189,14 +189,14 @@ func getCertFile(certConfig *CertConfig) (certFile string, keyFile string, err e
 }
 
 func buildVlessFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.VLessInboundFallback, error) {
-	vlessFallBack := make([]*conf.VLessInboundFallback, len(fallbackConfigs))
+	vlessFallBacks := make([]*conf.VLessInboundFallback, len(fallbackConfigs))
 	for i, c := range fallbackConfigs {
 
 		if c.Dest == "" {
 			return nil, fmt.Errorf("Dest is required for fallback fialed")
 		}
 
-		vat dest json.RawMessage
+		var dest json.RawMessage
 		dest, err :=json.Marshal(c.Dest)
 		if err != nil {
 			return nil, fmt.Errorf("Marshal dest %s config fialed: %s", dest, err)
