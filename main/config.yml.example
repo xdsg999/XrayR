@@ -42,12 +42,12 @@ Nodes:
           CF_API_EMAIL:
           CF_API_KEY:
   # -
-  #   PanelType: "V2board" # Panel type: SSpanel, V2board
+  #   PanelType: "SSpanel" # Panel type: SSpanel, V2board
   #   ApiConfig:
-  #     ApiHost: "https://example.com"
+  #     ApiHost: "http://example.com"
   #     ApiKey: "123"
   #     NodeID: 4
-  #     NodeType: Shadowsocks # Node type: V2ray, Shadowsocks, Trojan
+  #     NodeType: V2ray # Node type: V2ray, Shadowsocks, Trojan
   #     Timeout: 30 # Timeout for the api request
   #     EnableVless: false # Enable Vless for V2ray Type
   #     EnableXTLS: false # Enable XTLS for V2ray and Trojan
