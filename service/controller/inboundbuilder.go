@@ -112,7 +112,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			AcceptProxyProtocol: config.EnableProxyProtocol,
 		}
 		streamSetting.TCPSettings = tcpSetting
-	} else if networkType == " websocket" {
+	} else if networkType == "websocket" {
 		headers := make(map[string]string)
 		headers["Host"] = nodeInfo.Host
 		wsSettings := &conf.WebSocketConfig{
@@ -121,7 +121,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			Headers:             headers,
 		}
 		streamSetting.WSSettings = wsSettings
-	} else if networkType == "hhtp" {
+	} else if networkType == "http" {
 		hosts := conf.StringList{nodeInfo.Host}
 		httpSettings := &conf.HTTPConfig{
 			Host: &hosts,
