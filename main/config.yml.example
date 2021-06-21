@@ -2,7 +2,13 @@ Log:
   Level: none # Log level: none, error, warning, info, debug 
   AccessPath: # ./access.Log
   ErrorPath: # ./error.log
-DnsConfigPath: # ./dns.json Path to dns config 
+DnsConfigPath: # ./dns.json Path to dns config
+ConnectionConfig:
+    Handshake: 4
+    ConnIdle: 5
+    UplinkOnly: 2
+    DownlinkOnly: 4
+    BufferSize: 0
 Nodes:
   -
     PanelType: "SSpanel" # Panel type: SSpanel, V2board, PMpanel
