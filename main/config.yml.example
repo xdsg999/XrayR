@@ -5,10 +5,10 @@ Log:
 DnsConfigPath: # ./dns.json Path to dns config
 ConnectionConfig:
     Handshake: 4
-    ConnIdle: 5
+    ConnIdle: 30
     UplinkOnly: 2
     DownlinkOnly: 4
-    BufferSize: 0
+    BufferSize: 64
 Nodes:
   -
     PanelType: "SSpanel" # Panel type: SSpanel, V2board, PMpanel

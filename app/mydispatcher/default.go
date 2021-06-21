@@ -324,6 +324,11 @@ func (d *DefaultDispatcher) routedDispatch(ctx context.Context, link *transport.
 		handler = d.ohm.GetHandler(inTag) // Default outbound hander tag should be as same as the inbound tag
 	}
 
+	// if there is no outbound with tag ad same as the inbound tag
+	if handler == nil {
+		handler = d.ohm.GetDefaultHandler()
+	}
+
 	if handler == nil {
 		newError("default outbound handler not exist").WriteToLog(session.ExportIDToError(ctx))
 		common.Close(link.Writer)

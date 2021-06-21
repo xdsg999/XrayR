@@ -12,7 +12,9 @@ require (
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-resty/resty/v2 v2.5.0
 	github.com/golang/protobuf v1.5.2
+	github.com/imdario/mergo v0.3.12
 	github.com/juju/ratelimit v1.0.1
+	github.com/r3labs/diff/v2 v2.13.1
 	github.com/shirou/gopsutil v3.21.2+incompatible
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.7.0
