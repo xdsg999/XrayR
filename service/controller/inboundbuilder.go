@@ -17,7 +17,10 @@ import (
 func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandlerConfig, error) {
 	inboundDetourConfig := &conf.InboundDetourConfig{}
 	// Build Listen IP address
-	if config.ListenIP != "" {
+	if nodeInfo.NodeType == "Shadowsocks-Plugin" {
+		// shadowsocks listen in 127.0.0.1 for safety
+		inboundDetourConfig.ListenOn = &conf.Address{net.ParseAddress("127.0.0.1")}
+	} else if config.ListenIP != "" {
 		ipAddress := net.ParseAddress(config.ListenIP)
 		inboundDetourConfig.ListenOn = &conf.Address{ipAddress}
 	}
@@ -80,7 +83,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		} else {
 			proxySetting = &conf.TrojanServerConfig{}
 		}
-	} else if nodeInfo.NodeType == "Shadowsocks" {
+	} else if nodeInfo.NodeType == "Shadowsocks" || nodeInfo.NodeType == "Shadowsocks-Plugin" {
 		protocol = "shadowsocks"
 		proxySetting = &conf.ShadowsocksServerConfig{}
 		randomPasswd := uuid.New()
@@ -91,8 +94,17 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		proxySetting, _ := proxySetting.(*conf.ShadowsocksServerConfig)
 		proxySetting.Users = append(proxySetting.Users, defaultSSuser)
 		proxySetting.NetworkList = &conf.NetworkList{"tcp", "udp"}
+	} else if nodeInfo.NodeType == "dokodemo-door" {
+		protocol = "dokodemo-ddor"
+		proxySetting = struct {
+			Host        string     `json:"address"`
+			NetworkList []string   `json:"network"`
+		}{
+			Host:         "v1.mux.cool",
+			NetworkList:  []string{"tcp", "udp"},
+		}	
 	} else {
-		return nil, fmt.Errorf("Unsupported node type: %s, Only support: V2ray, Trojan, and Shadowsocks", nodeInfo.NodeType)
+		return nil, fmt.Errorf("Unsupported node type: %s, Only support: V2ray, Trojan, Shadowsocks, and Shadowsocks-Plugin", nodeInfo.NodeType)
 	}
 
 	setting, err := json.Marshal(proxySetting)
