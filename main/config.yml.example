@@ -11,7 +11,7 @@ ConnectionConfig:
     BufferSize: 64
 Nodes:
   -
-    PanelType: "SSpanel" # Panel type: SSpanel, V2board, PMpanel
+    PanelType: "SSpanel" # Panel type: SSpanel, V2board, PMpanel, Proxypanel
     ApiConfig:
       ApiHost: "https://example.com"
       ApiKey: "123"
