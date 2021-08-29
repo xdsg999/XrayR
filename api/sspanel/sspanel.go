@@ -340,7 +340,7 @@ func (c *APIClient) ReportIllegal(detectResultList *[]api.DetectResult) error {
 // ParseV2rayNodeResponse parse the response for the given nodeinfor format
 func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
 	var enableTLS bool
-	var path, host, TLStype, transportProtocol, serviceName string
+	var path, host, TLStype, transportProtocol, serviceName, HeaderType string
 	var speedlimit uint64 = 0
 	if nodeInfoResponse.RawServerString == "" {
 		return nil, fmt.Errorf("No server info in response")
@@ -372,7 +372,8 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 		}
 	}
 	extraServerConf := strings.Split(serverConf[5], "|")
-
+	serviceName = ""
+	HeaderType = "none"
 	for _, item := range extraServerConf {
 		conf := strings.Split(item, "=")
 		key := conf[0]
@@ -388,6 +389,8 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 			host = value
 		case "servicename":
 			serviceName = value	
+		case "Headertype":
+			HeaderType = value
 		}
 	}
 	if c.SpeedLimit > 0 {
@@ -410,6 +413,7 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 		Host:              host,
 		EnableVless:       c.EnableVless,
 		ServiceName:       serviceName,
+		HeaderType:        HeaderType,
 	}
 
 	return nodeinfo, nil
@@ -445,7 +449,6 @@ func (c *APIClient) ParseSSNodeResponse(nodeInfoResponse *NodeInfoResponse) (*ap
 			break
 		}
 	}
-
 	if port == 0 || method == "" {
 		return nil, fmt.Errorf("Cant find the single port multi user")
 	}
@@ -463,6 +466,7 @@ func (c *APIClient) ParseSSNodeResponse(nodeInfoResponse *NodeInfoResponse) (*ap
 		SpeedLimit:        speedlimit,
 		TransportProtocol: "tcp",
 		CypherMethod:      method,
+		HeaderType:        "none",
 	}
 
 	return nodeinfo, nil
@@ -499,6 +503,7 @@ func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse
 			transportProtocol = "tcp"		
 		}
 	}
+	
 	extraServerConf := strings.Split(serverConf[5], "|")
 	for _, item := range extraServerConf {
 		conf := strings.Split(item, "=")
@@ -532,6 +537,7 @@ func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse
 		TLSType:           TLStype,
 		Path:              path,
 		Host:              host,
+		HeaderType:        "none",
 	}
 
 	return nodeinfo, nil 
@@ -608,6 +614,7 @@ func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) 
 		TLSType:           TLSType,
 		Host:              host,
 		ServiceName:       serviceName,
+		HeaderType:        "none",
 	}
 
 	return nodeinfo, nil
