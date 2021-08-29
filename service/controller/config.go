@@ -1,15 +1,17 @@
 package controller
 
 type Config struct {
-	ListenIP            string            `mapstructure:"ListenIP"`
-	SendIP              string            `mapstructure:"SendIP"`
-	UpdatePeriodic      int               `mapstructure:"UpdatePeriodic"`
-	CertConfig          *CertConfig       `mapstructure:"CertConfig"`
-	EnableDNS           bool              `mapstructure:"EnableDNS"`
-	DNSType             string            `mapstructure:"DNSType"`
-	EnableProxyProtocol bool              `mapstructure:"EnableProxyProtocol"`
-	EnableFallback      bool              `mapstructure:"EnableFallback"`
-	FallBackConfigs     []*FallBackConfig `mapstructure:"FallBackConfigs"`
+	ListenIP             string            `mapstructure:"ListenIP"`
+	SendIP               string            `mapstructure:"SendIP"`
+	UpdatePeriodic       int               `mapstructure:"UpdatePeriodic"`
+	CertConfig           *CertConfig       `mapstructure:"CertConfig"`
+	EnableDNS            bool              `mapstructure:"EnableDNS"`
+	DNSType              string            `mapstructure:"DNSType"`
+	DisableUploadTraffic bool              `mapstructure:"DisableUploadTraffic"`
+	DisableGetRule       bool              `mapstructure:"DisableGetRule"`
+	EnableProxyProtocol  bool              `mapstructure:"EnableProxyProtocol"`
+	EnableFallback       bool              `mapstructure:"EnableFallback"`
+	FallBackConfigs      []*FallBackConfig `mapstructure:"FallBackConfigs"`
 }
 
 type CertConfig struct {
