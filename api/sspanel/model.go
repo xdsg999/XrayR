@@ -31,6 +31,7 @@ type UserResponse struct {
 	ForbiddenPort string  `json:"forbidden_port"`
 	UUID          string  `json:"uuid"`
 	MultiUser     int     `json:"is_multi_user"`
+	AliveIP       int     `json:"alive_ip"`
 }
 
 // Response is the common response
