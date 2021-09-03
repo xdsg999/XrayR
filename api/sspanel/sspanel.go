@@ -341,6 +341,7 @@ func (c *APIClient) ReportIllegal(detectResultList *[]api.DetectResult) error {
 func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
 	var enableTLS bool
 	var path, host, TLStype, transportProtocol, serviceName, HeaderType string
+	var header json.RawMessage
 	var speedlimit uint64 = 0
 	if nodeInfoResponse.RawServerString == "" {
 		return nil, fmt.Errorf("No server info in response")
@@ -373,7 +374,6 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 	}
 	extraServerConf := strings.Split(serverConf[5], "|")
 	serviceName = ""
-	HeaderType = "none"
 	for _, item := range extraServerConf {
 		conf := strings.Split(item, "=")
 		key := conf[0]
@@ -399,6 +399,15 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 		    speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
 
+	if HeaderType != "" {
+		headers := map[string]string{"type": HeaderType}
+		header, err = json.Marshal(headers)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("Marshal Header Type %s into config fialed: %s", header, err)
+	}
+
 	// Create GeneralNodeInfo
 	nodeinfo := &api.NodeInfo{
 		NodeType:          c.NodeType,
@@ -413,7 +422,7 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 		Host:              host,
 		EnableVless:       c.EnableVless,
 		ServiceName:       serviceName,
-		HeaderType:        HeaderType,
+		Header:            header,
 	}
 
 	return nodeinfo, nil
@@ -466,7 +475,6 @@ func (c *APIClient) ParseSSNodeResponse(nodeInfoResponse *NodeInfoResponse) (*ap
 		SpeedLimit:        speedlimit,
 		TransportProtocol: "tcp",
 		CypherMethod:      method,
-		HeaderType:        "none",
 	}
 
 	return nodeinfo, nil
@@ -537,7 +545,6 @@ func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse
 		TLSType:           TLStype,
 		Path:              path,
 		Host:              host,
-		HeaderType:        "none",
 	}
 
 	return nodeinfo, nil 
@@ -614,7 +621,6 @@ func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) 
 		TLSType:           TLSType,
 		Host:              host,
 		ServiceName:       serviceName,
-		HeaderType:        "none",
 	}
 
 	return nodeinfo, nil
