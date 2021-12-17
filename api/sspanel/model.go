@@ -27,20 +27,20 @@ type CustomConfig struct {
 	MuObfs         string           `json:"mu_obfs"`
 	MuSuffix       string           `json:"mu_suffix"`
 	V2Port         string           `json:"v2_port"`
-	TLS            int              `json:"tls"`
-	EnableVless    int              `json:"enable_vless"`
+	TLS            string           `json:"tls"`
+	EnableVless    string           `json:"enable_vless"`
 	AlterID        string           `json:"alter_id"`
 	Network        string           `json:"network"`
 	Security       string           `json:"security"`
 	Path           string           `json:"path"`
 	VerifyCert     bool             `json:"verify_cert"`
 	Obfs           string           `json:"obfs"`
-	Header         json.RawMessage `json:"header"`
+	Header         json.RawMessage  `json:"header"`
 	TrojanPort     string           `json:"trojan_port"`
-	AllowInsecure  int              `json:"allow_insecure"`
-	Grpc           int              `json:"grpc"`
+	AllowInsecure  string           `json:"allow_insecure"`
+	Grpc           string           `json:"grpc"`
 	Servicename    string           `json:"servicename"`
-	EnableXtls     int              `json:"enable_xtls"`
+	EnableXtls     string           `json:"enable_xtls"`
 	Flow           string           `json:"flow"`
 }
 
