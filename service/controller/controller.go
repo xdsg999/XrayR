@@ -286,7 +286,7 @@ func (c *Controller) addInboundForSSPlugin(newNodeInfo api.NodeInfo) (err error)
 
 		return err 
 	}
-	// add a inbound for upper streaming protocol
+	// add an inbound for upper streaming protocol
 	fakeNodeInfo = newNodeInfo
 	fakeNodeInfo.Port++
 	fakeNodeInfo.NodeType = "dokodemo-door"
