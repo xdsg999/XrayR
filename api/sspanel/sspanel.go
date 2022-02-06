@@ -65,9 +65,9 @@ func New(apiConfig *api.Config) *APIClient {
 	client.SetQueryParam("key", apiConfig.Key)
 	// Add support for muKey
 	client.SetQueryParam("muKey", apiConfig.Key)
-	// read local rule list
+	// Read local rule list
 	localRuleList := readLocalRuleList(apiConfig.RuleListPath)
-	
+
 	return &APIClient{
 		client:              client,
 		NodeID:              apiConfig.NodeID,
@@ -92,7 +92,7 @@ func readLocalRuleList(path string) (LocalRuleList []api.DetectRule) {
 		// open the file
 		file, err := os.Open(path)
 
-		// handle errors while opening
+		//handle errors while opening
 		if err != nil {
 			log.Printf("Error when opening file: %s", err)
 			return LocalRuleList
@@ -107,7 +107,7 @@ func readLocalRuleList(path string) (LocalRuleList []api.DetectRule) {
 				Pattern: fileScanner.Text(),
 			})
 		}
-		// hadle first encountered error while reading
+		// handle first encountered error while reading
 		if err := fileScanner.Err(); err != nil {
 			log.Fatalf("Error while reading file: %s", err)
 			return make([]api.DetectRule, 0)
@@ -178,12 +178,15 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 			log.Printf("custom_config is empty! take config from address now.")
 			disableCustomConfig = true
 		}
+	} else {
+		disableCustomConfig = true
 	}
+
 	if !disableCustomConfig {
 		nodeInfo, err = c.ParseSSPanelNodeInfo(nodeInfoResponse)
 		if err != nil {
 			res, _ := json.Marshal(nodeInfoResponse)
-			return nil, fmt.Errorf("Parse node info failed: %s, \nError: %s, \nPlease check the doc of custom_config for help: https://crackair.gitbook.io/xrayr-project/dui-jie-sspanel/sspanel_custom_config", string(res), err)
+			return nil, fmt.Errorf("Parse node info failed: %s, \nError: %s, \nPlease check the doc of custom_config for help: https://crackair.gitbook.io/xrayr-project/dui-jie-sspanel/sspanel/sspanel_custom_config", string(res), err)
 		}
 	} else {
 		switch c.NodeType {
@@ -259,7 +262,7 @@ func (c *APIClient) ReportNodeStatus(nodeStatus *api.NodeStatus) (err error) {
 
 //ReportNodeOnlineUsers reports online user ip
 func (c *APIClient) ReportNodeOnlineUsers(onlineUserList *[]api.OnlineUser) error {
-    c.access.Lock()
+	c.access.Lock()
 	defer c.access.Unlock()
 
 	reportOnline := make(map[int]int)
@@ -272,7 +275,7 @@ func (c *APIClient) ReportNodeOnlineUsers(onlineUserList *[]api.OnlineUser) erro
 			reportOnline[user.UID] = 1
 		}
 	}
-	c.LastReportOnline = reportOnline // update lastreportonline
+	c.LastReportOnline = reportOnline // Update LastReportOnline
 
 	postData := &PostData{Data: data}
 	path := fmt.Sprintf("/mod_mu/users/aliveip")
@@ -336,7 +339,7 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 	if err := json.Unmarshal(response.Data, ruleListResponse); err != nil {
 		return nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(ruleListResponse), err)
 	}
-	
+
 	for _, r := range *ruleListResponse {
 		ruleList = append(ruleList, api.DetectRule{
 			ID:      r.ID,
@@ -395,9 +398,9 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 		switch value {
 		case "tls", "xtls":
 			if c.EnableXTLS {
-				    TLStype = "xtls"		
+				TLStype = "xtls"
 			} else {
-				    TLStype = "tls"
+				TLStype = "tls"
 			}
 			enableTLS = true
 		default:
@@ -428,9 +431,9 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 		}
 	}
 	if c.SpeedLimit > 0 {
-		    speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
+		speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
 	} else {
-		    speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
+		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
 
 	if HeaderType != "" {
@@ -497,9 +500,9 @@ func (c *APIClient) ParseSSNodeResponse(nodeInfoResponse *NodeInfoResponse) (*ap
 	}
 
 	if c.SpeedLimit > 0 {
-		    speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
+		speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
 	} else {
-		    speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
+		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
 	// Create GeneralNodeInfo
 	nodeinfo := &api.NodeInfo{
@@ -514,7 +517,7 @@ func (c *APIClient) ParseSSNodeResponse(nodeInfoResponse *NodeInfoResponse) (*ap
 	return nodeinfo, nil
 }
 
-// ParseSSPluginNodeResponse parse the response for the given nodeinfo format
+// ParseSSPluginNodeResponse parse the response for the given nodeinfor format
 func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
 	var enableTLS bool
 	var path, host, TLStype, transportProtocol string
@@ -525,12 +528,12 @@ func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse
 	if err != nil {
 		return nil, err
 	}
-	port = port - 1 
+	port = port - 1 // Shadowsocks-Plugin requires two ports, one for ss the other for other stream protocol
 	if port <= 0 {
 		return nil, fmt.Errorf("Shadowsocks-Plugin listen port must bigger than 1")
 	}
-	// compatible with more node types config
-	for _, value :=range serverConf[3:5] {
+	// Compatible with more node types config
+	for _, value := range serverConf[3:5] {
 		switch value {
 		case "tls", "xtls":
 			if c.EnableXTLS {
@@ -542,7 +545,7 @@ func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse
 		case "ws":
 			transportProtocol = "ws"
 		case "obfs":
-			transportProtocol = "tcp"		
+			transportProtocol = "tcp"
 		}
 	}
 
@@ -556,10 +559,10 @@ func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse
 		value := conf[1]
 		switch key {
 		case "path":
-			rawPath := strings.Join(conf[1:], "=") 
+			rawPath := strings.Join(conf[1:], "=") // In case of the path strings contains the "="
 			path = rawPath
 		case "host":
-			host = value	
+			host = value
 		}
 	}
 	if c.SpeedLimit > 0 {
@@ -568,7 +571,7 @@ func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse
 		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
 
-	// creat generalnodeinfo
+	// Create GeneralNodeInfo
 	nodeinfo := &api.NodeInfo{
 		NodeType:          c.NodeType,
 		NodeID:            c.NodeID,
@@ -581,7 +584,7 @@ func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse
 		Host:              host,
 	}
 
-	return nodeinfo, nil 
+	return nodeinfo, nil
 }
 
 // ParseTrojanNodeResponse parse the response for the given nodeinfor format
@@ -591,9 +594,9 @@ func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) 
 	var p, TLSType, host, outsidePort, insidePort, transportProtocol, serviceName string
 	var speedlimit uint64 = 0
 	if c.EnableXTLS {
-		    TLSType = "xtls"
+		TLSType = "xtls"
 	} else {
-		    TLSType = "tls"
+		TLSType = "tls"
 	}
 
 	if nodeInfoResponse.RawServerString == "" {
@@ -640,9 +643,9 @@ func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) 
 	}
 
 	if c.SpeedLimit > 0 {
-		    speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
+		speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
 	} else {
-		    speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8) 
+		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
 	// Create GeneralNodeInfo
 	nodeinfo := &api.NodeInfo{
@@ -663,8 +666,8 @@ func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) 
 // ParseUserListResponse parse the response for the given nodeinfo format
 func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]api.UserInfo, error) {
 	c.access.Lock()
-	// clear last report log
-	defer func ()  {
+	// Clear Last report log
+	defer func() {
 		c.LastReportOnline = make(map[int]int)
 		c.access.Unlock()
 	}()
@@ -685,13 +688,13 @@ func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]
 			if v, ok := c.LastReportOnline[user.ID]; ok {
 				lastOnline = v
 			}
-			// if there are any available device
+			// If there are any available device.
 			if localDeviceLimit = deviceLimit - user.AliveIP + lastOnline; localDeviceLimit > 0 {
 				deviceLimit = localDeviceLimit
-				// if this backend server has reported any user in the last reporting period
+				// If this backend server has reported any user in the last reporting period.
 			} else if lastOnline > 0 {
-                deviceLimit = lastOnline
-				// remove this user
+				deviceLimit = lastOnline
+				// Remove this user.
 			} else {
 				continue
 			}

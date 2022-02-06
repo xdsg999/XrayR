@@ -11,29 +11,30 @@ import (
 )
 
 //OutboundBuilder build freedom outbund config for addoutbound
-func OutboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.OutboundHandlerConfig, error) {
+func OutboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.OutboundHandlerConfig, error) {
 	outboundDetourConfig := &conf.OutboundDetourConfig{}
 	outboundDetourConfig.Protocol = "freedom"
-	outboundDetourConfig.Tag = fmt.Sprintf("%s_%d", nodeInfo.NodeType, nodeInfo.Port)
+	outboundDetourConfig.Tag = tag
 
-	// build send ip address
+	// Build Send IP address
 	if config.SendIP != "" {
 		ipAddress := net.ParseAddress(config.SendIP)
 		outboundDetourConfig.SendThrough = &conf.Address{ipAddress}
 	}
 
-	// freedom protocol setting
+	// Freedom Protocol setting
 	var domainStrategy string = "Asis"
 	if config.EnableDNS {
 		if config.DNSType != "" {
 			domainStrategy = config.DNSType
 		} else {
 			domainStrategy = "UseIP"
-	    }
+		}
 	}
 	proxySetting := &conf.FreedomConfig{
 		DomainStrategy: domainStrategy,
 	}
+	// Used for Shadowsocks-Plugin
 	if nodeInfo.NodeType == "dokodemo-door" {
 		proxySetting.Redirect = fmt.Sprintf("127.0.0.1:%d", nodeInfo.Port-1)
 	}

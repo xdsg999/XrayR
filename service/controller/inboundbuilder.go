@@ -14,11 +14,11 @@ import (
 )
 
 //InboundBuilder build Inbound config for different protocol
-func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandlerConfig, error) {
+func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.InboundHandlerConfig, error) {
 	inboundDetourConfig := &conf.InboundDetourConfig{}
 	// Build Listen IP address
 	if nodeInfo.NodeType == "Shadowsocks-Plugin" {
-		// shadowsocks listen in 127.0.0.1 for safety
+		// Shdowsocks listen in 127.0.0.1 for safety
 		inboundDetourConfig.ListenOn = &conf.Address{net.ParseAddress("127.0.0.1")}
 	} else if config.ListenIP != "" {
 		ipAddress := net.ParseAddress(config.ListenIP)
@@ -31,7 +31,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 	}
 	inboundDetourConfig.PortList = portList
 	// Build Tag
-	inboundDetourConfig.Tag = fmt.Sprintf("%s_%d", nodeInfo.NodeType, nodeInfo.Port)
+	inboundDetourConfig.Tag = tag
 	// SniffingConfig
 	sniffingConfig := &conf.SniffingConfig{
 		Enabled:      true,
@@ -53,13 +53,13 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 	if nodeInfo.NodeType == "V2ray" {
 		if nodeInfo.EnableVless {
 			protocol = "vless"
-			// enable fallback
+			// Enable fallback
 			if config.EnableFallback {
 				fallbackConfigs, err := buildVlessFallbacks(config.FallBackConfigs)
 				if err == nil {
 					proxySetting = &conf.VLessInboundConfig{
 						Decryption: "none",
-						Fallbacks: fallbackConfigs,
+						Fallbacks:  fallbackConfigs,
 					}
 				} else {
 					return nil, err
@@ -75,9 +75,9 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		}
 	} else if nodeInfo.NodeType == "Trojan" {
 		protocol = "trojan"
-		// enable fallback
+		// Enable fallback
 		if config.EnableFallback {
-			fallbackConfigs, err :=buildTrojanFallbacks(config.FallBackConfigs)
+			fallbackConfigs, err := buildTrojanFallbacks(config.FallBackConfigs)
 			if err == nil {
 				proxySetting = &conf.TrojanServerConfig{
 					Fallbacks: fallbackConfigs,
@@ -105,14 +105,14 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		}
 
 	} else if nodeInfo.NodeType == "dokodemo-door" {
-		protocol = "dokodemo-ddor"
+		protocol = "dokodemo-door"
 		proxySetting = struct {
-			Host        string     `json:"address"`
-			NetworkList []string   `json:"network"`
+			Host        string   `json:"address"`
+			NetworkList []string `json:"network"`
 		}{
-			Host:         "v1.mux.cool",
-			NetworkList:  []string{"tcp", "udp"},
-		}	
+			Host:        "v1.mux.cool",
+			NetworkList: []string{"tcp", "udp"},
+		}
 	} else {
 		return nil, fmt.Errorf("Unsupported node type: %s, Only support: V2ray, Trojan, Shadowsocks, and Shadowsocks-Plugin", nodeInfo.NodeType)
 	}
@@ -139,7 +139,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		headers := make(map[string]string)
 		headers["Host"] = nodeInfo.Host
 		wsSettings := &conf.WebSocketConfig{
-		    AcceptProxyProtocol: config.EnableProxyProtocol,
+			AcceptProxyProtocol: config.EnableProxyProtocol,
 			Path:                nodeInfo.Path,
 			Headers:             headers,
 		}
@@ -177,7 +177,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			streamSetting.XTLSSettings = xtlsSettings
 		}
 	}
-    // Support ProxyProtocol for any transport protocol
+	// Support ProxyProtocol for any transport protocol
 	if networkType != "tcp" && networkType != "ws" && config.EnableProxyProtocol {
 		sockoptConfig := &conf.SocketConfig{
 			AcceptProxyProtocol: config.EnableProxyProtocol,
@@ -235,7 +235,7 @@ func buildVlessFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.VLessInboun
 		}
 
 		var dest json.RawMessage
-		dest, err :=json.Marshal(c.Dest)
+		dest, err := json.Marshal(c.Dest)
 		if err != nil {
 			return nil, fmt.Errorf("Marshal dest %s config fialed: %s", dest, err)
 		}
@@ -243,7 +243,7 @@ func buildVlessFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.VLessInboun
 			Name: c.SNI,
 			Path: c.Path,
 			Dest: dest,
-			Xver: c.ProxyProcotolVer,
+			Xver: c.ProxyProtocolVer,
 		}
 	}
 	return vlessFallBacks, nil
@@ -255,7 +255,7 @@ func buildTrojanFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.TrojanInbo
 	}
 
 	trojanFallBacks := make([]*conf.TrojanInboundFallback, len(fallbackConfigs))
-	for i, c := range fallbackConfigs{
+	for i, c := range fallbackConfigs {
 
 		if c.Dest == "" {
 			return nil, fmt.Errorf("Dest is required for fallback fialed")
@@ -270,7 +270,7 @@ func buildTrojanFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.TrojanInbo
 			Name: c.SNI,
 			Path: c.Path,
 			Dest: dest,
-			Xver: c.ProxyProcotolVer,
+			Xver: c.ProxyProtocolVer,
 		}
 	}
 	return trojanFallBacks, nil
