@@ -12,3 +12,5 @@ main/.lego
 main/cert
 main/config.yml
 ./vscode
+.idea/*
+config.yml 
