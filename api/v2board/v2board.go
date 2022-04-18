@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/XrayR-project/XrayR/api"
@@ -26,6 +28,8 @@ type APIClient struct {
 	SpeedLimit    float64
 	DeviceLimit   int
 	LocalRuleList []api.DetectRule
+	ConfigResp    *simplejson.Json
+	access        sync.Mutex
 }
 
 // New create an api instance
@@ -88,7 +92,7 @@ func readLocalRuleList(path string) (LocalRuleList []api.DetectRule) {
 		for fileScanner.Scan() {
 			LocalRuleList = append(LocalRuleList, api.DetectRule{
 				ID:      -1,
-				Pattern: fileScanner.Text(),
+				Pattern: regexp.MustCompile(fileScanner.Text()),
 			})
 		}
 		// handle first encountered error while reading
@@ -156,6 +160,9 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 		Get(path)
 
 	response, err := c.parseResponse(res, path, err)
+	c.access.Lock()
+	defer c.access.Unlock()
+	c.ConfigResp = response
 	if err != nil {
 		return nil, err
 	}
@@ -266,21 +273,14 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 	}
 
 	// V2board only support the rule for v2ray
-	path := "/api/v1/server/Deepbwork/config"
-	res, err := c.client.R().
-		SetQueryParam("local_port", "1").
-		ForceContentType("application/json").
-		Get(path)
-
-	response, err := c.parseResponse(res, path, err)
-	if err != nil {
-		return nil, err
-	}
-	ruleListResponse := response.Get("routing").Get("rules").GetIndex(1).Get("domain").MustStringArray()
+	// fix: reuse config response
+	c.access.Lock()
+	defer c.access.Unlock()
+	ruleListResponse := c.ConfigResp.Get("routing").Get("rules").GetIndex(1).Get("domain").MustStringArray()
 	for i, rule := range ruleListResponse {
 		ruleListItem := api.DetectRule{
 			ID:      i,
-			Pattern: rule,
+			Pattern: regexp.MustCompile(rule),
 		}
 		ruleList = append(ruleList, ruleListItem)
 	}
@@ -366,8 +366,8 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *simplejson.Json) (*
 		// Compatible with v2board 1.5.5-dev
 	} else if tmpInboundInfo, ok := nodeInfoResponse.CheckGet("inbounds"); ok {
 		tmpInboundInfo := tmpInboundInfo.MustArray()
-		marshal_byte, _ := json.Marshal(tmpInboundInfo[0].(map[string]interface{}))
-		inboundInfo, _ = simplejson.NewJson(marshal_byte)
+		marshalByte, _ := json.Marshal(tmpInboundInfo[0].(map[string]interface{}))
+		inboundInfo, _ = simplejson.NewJson(marshalByte)
 	} else {
 		return nil, fmt.Errorf("Unable to find inbound(s) in the nodeInfo.")
 	}
@@ -399,15 +399,9 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *simplejson.Json) (*
 		enableTLS = false
 	}
 
-	userInfo, err := c.GetUserList()
-	if err != nil {
-		return nil, err
-	}
-	if len(*userInfo) > 0 {
-		alterID = (*userInfo)[0].AlterID
-	}
 	// Create GeneralNodeInfo
-	nodeinfo := &api.NodeInfo{
+	// AlterID will be updated after next sync
+	nodeInfo := &api.NodeInfo{
 		NodeType:          c.NodeType,
 		NodeID:            c.NodeID,
 		Port:              port,
@@ -421,5 +415,5 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *simplejson.Json) (*
 		ServiceName:       serviceName,
 		Header:            header,
 	}
-	return nodeinfo, nil
+	return nodeInfo, nil
 }
