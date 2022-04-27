@@ -65,7 +65,7 @@ A Xray backend framework that can easily support many panels.
 
 ## Licence
 
-[Mozilla Public License Version 2.0](https://github.com/XrayR-project/XrayR/blob/main/LICENSE)
+[Mozilla Public License Version 2.0]
 
 ## Telgram
 
@@ -88,7 +88,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/xdsg999/XrayR-release/master/i
 1. go 1.16.0
 2. 依次运行
 ```bash
-git clone https://github.com/amfiyong/XrayR
+git clone https://github.com/xdsg999/XrayR
 cd XrayR/main
 go mod tidy
 go build -o XrayR -ldflags "-s -w"
