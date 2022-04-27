@@ -75,13 +75,13 @@ A Xray backend framework that can easily support many panels.
 
 # 一键安装
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/amfiyong/XrayR-release/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/xdsg999/XrayR-release/master/install.sh)
 ```
 ## 使用Docker部署软件
-[Docker部署教程](https://github.com/XrayR-project/XrayR-release/blob/master/README.md)
+[Docker部署教程]
 
 ## 下载并使用
-1. 在此处，根据自身系统选择合适的版本：[Release](https://github.com/amfiyong/XrayR/releases)
+1. 在此处，根据自身系统选择合适的版本：[Release](https://github.com/xdsg999/XrayR/releases)
 2. 解压压缩包，之后运行：`./XrayR -config config.yml`
 
 ## 编译并使用
